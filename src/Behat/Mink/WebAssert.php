@@ -421,6 +421,46 @@ class WebAssert
     }
 
     /**
+     * Checks that specific element contains html that matches.
+     *
+     * @param string $selectorType element selector type (css, xpath)
+     * @param string $selector     element selector
+     * @param string $regex        expected regular expression
+     *
+     * @throws ElementTextException
+     */
+    public function elementHtmlMatches($selectorType, $selector, $regex)
+    {
+        $element = $this->elementExists($selectorType, $selector);
+        $actual  = $element->getHtml();
+    
+        if (!preg_match($regex, $actual)) {
+            $message = sprintf('The pattern %s was not found anywhere in the html of the element.', $regex);
+            throw new ExpectationException($message, $this->session);
+        }
+    }
+    
+    /**
+     * Checks that specific element does not contains html that matches.
+     *
+     * @param string $selectorType element selector type (css, xpath)
+     * @param string $selector     element selector
+     * @param string $regex        expected regular expression
+     *
+     * @throws ElementTextException
+     */
+    public function elementHtmlNotMatches($selectorType, $selector, $regex)
+    {
+        $element = $this->elementExists($selectorType, $selector);
+        $actual  = $element->getHtml();
+    
+        if (preg_match($regex, $actual)) {
+            $message = sprintf('The pattern %s was found in the html of the element, but it should not.', $regex);
+            throw new ExpectationException($message, $this->session);
+        }
+    }
+
+    /**
      * Checks that specific field exists on the current page.
      *
      * @param string $field field id|name|label|value
